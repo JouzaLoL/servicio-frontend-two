@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Servicio Frontend API Example</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="./helper.js"></script>
+    <!-- W3.CSS -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- JQuery Modal -->
+    <script src="jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="jquery.modal.css" type="text/css" media="screen" />
+    <!-- JS Cookie -->
+    <script src="js.cookie.js"></script>
+</head>
+
+<body>
+    <script>
+        var baseUrl = "https://servicio-api.herokuapp.com/api";
+        function refresh() {
+            let token;
+            if (window.token) {
+                token = window.token;
+            } else if (Cookies.get('servicio-apitoken')) {
+                token = Cookies.get('servicio-apitoken');
+            } else {
+                return false;
+            }
+
+
+            // Update Cars table
+            let $carlist = $('ul#cars');
+            let $cartrs = $('li.car');
+            $cartrs.remove();
+
+            $.ajax({
+                url: baseUrl + "/user/cars",
+                method: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-Access-Token', token);
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done((data) => {
+                data.cars.forEach(function (car) {
+                    let $li = c('li', { class: "car" });
+                    $li.append(c('span', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
+                    $li.append(c('br'));
+                    $li.append(c('span', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
+                    $li.append(c('span', { class: "car_year" }).text("Year: " + car.year));
+                    $li.append(c('span').append(c('a', { class: 'car_remove w3-button  w3-right', href: "#" }).text('Remove')));
+                    $li.append(c('span').append(c('a', { class: 'car_edit w3-button  w3-right', href: "#" }).text('Edit')));
+                    $li.append(c('span').append(c('a', { class: 'car_entries w3-button  w3-right', href: "#" }).text('Service Entries')));
+                    $li.append(c('span', { class: "car_id", style: "display:none" }).text(car._id));
+                    $li.appendTo($carlist);
+                });
+
+                $('a.car_remove').click((eventObject) => {
+                    eventObject.preventDefault();
+                    $(eventObject.target).text('Confirm').addClass('confirm_deletion');
+
+                    $('a.confirm_deletion').click((eventObject) => {
+                        eventObject.preventDefault();
+                        let id = $(eventObject.target).parent().parent().find('.car_id').text();
+                        $.ajax({
+                            url: baseUrl + "/user/cars/" + id,
+                            method: "DELETE",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('X-Access-Token', token);
+                            },
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        }).done(() => {
+                            refresh();
+                        });
+                    });
+                });
+
+                $('a.car_edit').click((eventObject) => {
+                    eventObject.preventDefault();
+
+                    $('div#editCar').modal();
+                    $('input#editCar').click(() => {
+
+                        let d = JSON.parse(parseForm('form#editCar'));
+                        Object.keys(d).forEach((key) => {
+                            if (d[key] == "") {
+                                d[key] = undefined;
+                            }
+                        });
+                        let data = JSON.stringify(d);
+                        let id = $(eventObject.target).parent().parent().find('.car_id').text();
+
+                        $.ajax({
+                            url: baseUrl + "/user/cars/" + id,
+                            method: "PATCH",
+                            contentType: "application/json; charset=utf-8",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('X-Access-Token', token);
+                            },
+                            dataType: "json",
+                            data: data
+                        }).done((data) => {
+                            if (!data.success) { return; }
+
+                            $(c('div', { class: "success" }).text("Edit succesful")).modal();
+                            refresh();
+                        });
+                    });
+                });
+            });
+
+            // Update Profile
+            $.ajax({
+                url: baseUrl + "/user/",
+                method: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-Access-Token', token);
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done((data) => {
+                $('span#name').text(data.user.name);
+            });
+        }
+
+        $(document).ready(() => {
+            if (!Cookies.get('servicio-apitoken')) {
+                $('div#login').modal({
+                    escapeClose: false,
+                    clickClose: false,
+                    showClose: false
+                });
+            } else {
+                window.token = Cookies.get('servicio-apitoken');
+                refresh();
+            }
+
+            $('a#register').click((e) => {
+                e.preventDefault();
+                $('div#register').modal({ closeExisting: false });
+            });
+
+            $('input#register').click(
+                () => {
+                    let data = parseForm('form#register');
+                    $.ajax({
+                        url: baseUrl + "/user/register",
+                        method: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: data
+                    }).done((data) => {
+                        if (data.success) {
+                            $(c('div', { class: "success" }).text("Registered succesfully")).modal({
+                                closeExisting: false
+                            }).on($.modal.AFTER_CLOSE, function (event, modal) {
+                                $.modal.close();
+                            });
+                        }
+                    }).fail((data) => {
+                        if (data.responseJSON.statusText == "Validation Error") {
+                            $(c('div', { class: "error" }).text("Email already exists")).modal({
+                                closeExisting: false
+                            });
+                        }
+                    });
+                }
+            );
+
+            $('input#login').click(() => {
+
+                let data = parseForm('form#login');
+                $.ajax({
+                    url: baseUrl + "/user/authenticate",
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: data
+                }).done((data) => {
+                    if (!data.success) { return; }
+
+                    $(c('div', { class: "success" }).text("Login successful")).modal();
+
+                    window.token = data.token;
+                    Cookies.set('servicio-apitoken', data.token);
+                    refresh();
+
+                }).fail((d) => {
+                    let data = d.responseJSON;
+                    if (data.error == "BadPassword") {
+                        $(c('div', { class: "error" }).text("Wrong password")).modal({
+                            closeExisting: false
+                        });
+                    } else if (data.error == "UserNotFound") {
+                        $(c('div', { class: "error" }).text("User doesn't exist")).modal({
+                            closeExisting: false
+                        });
+                    }
+                });
+            });
+
+            $('a#logout').click(() => {
+                $('div#login').modal();
+                Cookies.remove('servicio-apitoken');
+            });
+
+            $('button#addCar').click(() => {
+                $('div#addCar').modal();
+            });
+
+            $('input#addCar').click(() => {
+                let data = parseForm('form#addCar');
+                $.ajax({
+                    url: baseUrl + "/user/cars",
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('X-Access-Token', window.token);
+                    },
+                    dataType: "json",
+                    data: data
+                }).done((data) => {
+                    if (!data.success) { return; }
+
+                    $(c('div', { class: "success" }).text("Car added")).modal();
+                    refresh();
+
+                }).fail((d) => {
+                    let data = d.responseJSON;
+                    if (data.error == "BadPassword") {
+                        $(c('div', { class: "error" }).text("Wrong password")).modal({
+                            closeExisting: false
+                        });
+                    } else if (data.error == "UserNotFound") {
+                        $(c('div', { class: "error" }).text("User doesn't exist")).modal({
+                            closeExisting: false
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- MAIN -->
+
+    <div>
+        <div id="navigation" class="w3-bar w3-blue-grey w3-padding">
+            <div id="menu">
+                <a href="#navigation" class="w3-bar-item w3-large">Dashboard</a>
+            </div>
+            <div id="account" class="w3-right">
+                <span class="w3-bar-item" id="name">Name Surname</span>
+                <a href="" id="profile" class="w3-bar-item">Profile</a>
+                <a href="" id="logout" class="w3-bar-item">Log out</a>
+            </div>
+        </div>
+        <div id="body">
+            <div id="cars" class="w3-container">
+                <h2>Cars</h2>
+                <ul class="w3-ul w3-card-4" id="cars">
+                </ul>
+            </div>
+            <button id="addCar" class="w3-button w3-blue-grey w3-margin">Add Car</button>
+        </div>
+    </div>
+
+    <!-- MODALS-->
+
+    <div id="login" style="display:none">
+        <h3>Login</h3>
+        <form id="login">
+            <label for="email">Email: </label><input type="text" name="email" class="w3-input"> <br>
+            <label for="password">Password: </label><input type="password" name="password" class="w3-input"> <br>
+            <input type="button" value="Login" id="login" class="w3-input">
+        </form>
+        <span><a href="" id="register">Don't have an account? Register</a></span>
+    </div>
+
+    <div id="register" style="display:none">
+        <h3>Register</h3>
+        <form id="register">
+            Name: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">            <br> Password: <input type="password" name="password" class="w3-input"> <br>
+            <input type="button" value="Register" id="register" class="w3-input">
+        </form>
+    </div>
+
+    <div id="addCar" style="display:none">
+        <h3>Add Car</h3>
+        <form id="addCar">
+            <label for="SPZ">SPZ: </label><input type="text" name="SPZ" class="w3-input"> <br>
+            <label for="model">Model: </label><input type="text" name="model" class="w3-input"> <br>
+            <label for="year">Year: </label><input type="text" name="year" class="w3-input"> <br>
+            <input type="button" value="Add" id="addCar" class="w3-input">
+        </form>
+    </div>
+
+    <div id="editCar" style="display:none">
+        <h3>Edit Car</h3>
+        <form id="editCar">
+            <label for="SPZ">SPZ: </label><input type="text" name="SPZ" class="w3-input"> <br>
+            <label for="model">Model: </label><input type="text" name="model" class="w3-input"> <br>
+            <label for="year">year: </label><input type="text" name="year" class="w3-input"> <br>
+            <input type="button" value="Edit" id="editCar" class="w3-input">
+        </form>
+    </div>
+
+</body>
+
+</html>
