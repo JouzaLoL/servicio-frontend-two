@@ -26,20 +26,19 @@
             let token;
             if (window.token) {
                 token = window.token;
-            } else if (Cookies.get('servicio-apitoken')) {
-                token = Cookies.get('servicio-apitoken');
+            } else if (Cookies.get('servicio-apitoken_vendor')) {
+                token = Cookies.get('servicio-apitoken_vendor');
             } else {
                 return false;
             }
 
-
-            // Update Cars table
-            let $carlist = $('ul#cars');
-            let $cartrs = $('li.car');
-            $cartrs.remove();
+            // Update Services list
+            let $servicestable = $('table#services');
+            let $servicestrs = $('tr.service');
+            $servicestrs.remove();
 
             $.ajax({
-                url: baseUrl + "/user/cars",
+                url: baseUrl + "/vendor/services",
                 method: "GET",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('X-Access-Token', token);
@@ -47,17 +46,13 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done((data) => {
-                data.cars.forEach(function (car) {
-                    let $li = c('li', { class: "car" });
-                    $li.append(c('span', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
-                    $li.append(c('br'));
-                    $li.append(c('span', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
-                    $li.append(c('span', { class: "car_year" }).text("Year: " + car.year));
-                    $li.append(c('span').append(c('a', { class: 'car_remove w3-button  w3-right', href: "#" }).text('Remove')));
-                    $li.append(c('span').append(c('a', { class: 'car_edit w3-button  w3-right', href: "#" }).text('Edit')));
-                    $li.append(c('span').append(c('a', { class: 'car_entries w3-button  w3-right', href: "#" }).text('Service Entries')));
-                    $li.append(c('span', { class: "car_id", style: "display:none" }).text(car._id));
-                    $li.appendTo($carlist);
+                data.services.forEach(function (service) {
+                    let $tr = c('tr', { class: "service" });
+                    $tr.append(c('td', { class: "car_model w3-large w3-margin-bottom" }).text(service.car.model));
+                    $tr.append(c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(service.car.SPZ));
+                    $tr.append(c('td', { class: "service_cost" }).text("Cost: " + service.cost + " Kč"));
+                    $tr.append(c('td', { class: "service_description" }).text("Description: " + service.description));
+                    $tr.appendTo($servicestable);
                 });
 
                 registerEvents();
@@ -65,7 +60,7 @@
 
             // Update Profile
             $.ajax({
-                url: baseUrl + "/user/",
+                url: baseUrl + "/vendor/",
                 method: "GET",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('X-Access-Token', token);
@@ -73,33 +68,34 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done((data) => {
-                $('span#name').text(data.user.name);
+                $('span#name').text(data.vendor.name);
+                window._id = data.vendor._id;
             });
         }
 
         function registerEvents() {
-            $('a.car_remove').click((eventObject) => {
-                eventObject.preventDefault();
-                $(eventObject.target).text('Confirm').addClass('confirm_deletion');
+            // $('a.car_remove').click((eventObject) => {
+            //     eventObject.preventDefault();
+            //     $(eventObject.target).text('Confirm').addClass('confirm_deletion');
 
-                $('a.confirm_deletion').click((eventObject) => {
-                    eventObject.preventDefault();
-                    let id = $(eventObject.target).parent().parent().find('.car_id').text();
-                    $.ajax({
-                        url: baseUrl + "/user/cars/" + id,
-                        method: "DELETE",
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('X-Access-Token', token);
-                        },
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json"
-                    }).done(() => {
-                        refresh();
-                    });
-                });
-            });
+            //     $('a.confirm_deletion').click((eventObject) => {
+            //         eventObject.preventDefault();
+            //         let id = $(eventObject.target).parent().parent().find('.car_id').text();
+            //         $.ajax({
+            //             url: baseUrl + "/user/cars/" + id,
+            //             method: "DELETE",
+            //             beforeSend: function (xhr) {
+            //                 xhr.setRequestHeader('X-Access-Token', token);
+            //             },
+            //             contentType: "application/json; charset=utf-8",
+            //             dataType: "json"
+            //         }).done(() => {
+            //             refresh();
+            //         });
+            //     });
+            // });
 
-            $('a.car_edit').click((eventObject) => {
+            $('a.service_image').click((eventObject) => {
                 eventObject.preventDefault();
 
                 $('div#editCar').modal();
@@ -160,15 +156,17 @@
             });
         }
 
+
+        // Main entry point
         $(document).ready(() => {
-            if (!Cookies.get('servicio-apitoken')) {
+            if (!Cookies.get('servicio-apitoken_vendor')) {
                 $('div#login').modal({
                     escapeClose: false,
                     clickClose: false,
                     showClose: false
                 });
             } else {
-                window.token = Cookies.get('servicio-apitoken');
+                window.token = Cookies.get('servicio-apitoken_vendor');
                 refresh();
             }
 
@@ -181,7 +179,7 @@
                 () => {
                     let data = parseForm('form#register');
                     $.ajax({
-                        url: baseUrl + "/user/register",
+                        url: baseUrl + "/vendor/register",
                         method: "POST",
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -208,7 +206,7 @@
 
                 let data = parseForm('form#login');
                 $.ajax({
-                    url: baseUrl + "/user/authenticate",
+                    url: baseUrl + "/vendor/authenticate",
                     method: "POST",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -219,7 +217,7 @@
                     $(c('div', { class: "success" }).text("Login successful")).modal();
 
                     window.token = data.token;
-                    Cookies.set('servicio-apitoken', data.token);
+                    Cookies.set('servicio-apitoken_vendor', data.token);
                     refresh();
 
                 }).fail((d) => {
@@ -238,42 +236,54 @@
 
             $('a#logout').click(() => {
                 $('div#login').modal();
-                Cookies.remove('servicio-apitoken');
+                Cookies.remove('servicio-apitoken_vendor');
             });
 
-            $('button#addCar').click(() => {
-                $('div#addCar').modal();
+            $('button#addService').click(() => {
+                $('div#addService').modal();
             });
 
-            $('input#addCar').click(() => {
-                let data = parseForm('form#addCar');
-                $.ajax({
-                    url: baseUrl + "/user/cars",
-                    method: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader('X-Access-Token', window.token);
-                    },
-                    dataType: "json",
-                    data: data
-                }).done((data) => {
-                    if (!data.success) { return; }
+            $('input#addService').click(() => {
+                let d = parseForm('form#addService');
 
-                    $(c('div', { class: "success" }).text("Car added")).modal();
-                    refresh();
+                var reader = new FileReader();
+                reader.readAsDataURL($('#file')[0].files[0]);
+                reader.onload = () => {
+                    let receipt = {
+                        data: reader.result.split(',')[1],
+                        contentType: $('#file')[0].files[0].type
+                    };
+                    let data = JSON.parse(d);
+                    data.receipt = receipt;
+                    data.vendorID = window._id;
+                    data.date = new Date(data.date).toISOString()
+                    $.ajax({
+                        url: baseUrl + "/vendor/cars/search/" + data.SPZ,
+                        method: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('X-Access-Token', window.token);
+                        },
+                        dataType: "json",
+                    }).done((car) => {
 
-                }).fail((d) => {
-                    let data = d.responseJSON;
-                    if (data.error == "BadPassword") {
-                        $(c('div', { class: "error" }).text("Wrong password")).modal({
-                            closeExisting: false
+                        $.ajax({
+                            url: baseUrl + "/vendor/cars/" + car.car._id + "/services",
+                            method: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('X-Access-Token', window.token);
+                            },
+                            dataType: "json",
+                            data: JSON.stringify(data)
+                        }).done((res) => {
+                            if(res.success) {
+                                refresh();
+                                $.modal.close();
+                            }
                         });
-                    } else if (data.error == "UserNotFound") {
-                        $(c('div', { class: "error" }).text("User doesn't exist")).modal({
-                            closeExisting: false
-                        });
-                    }
-                });
+                    });
+                };
             });
         });
     </script>
@@ -283,7 +293,7 @@
     <div>
         <div id="navigation" class="w3-bar w3-blue-grey w3-padding">
             <div id="menu">
-                <a href="#navigation" class="w3-bar-item w3-large">Servicio</a>
+                <span class="w3-bar-item w3-large">Servicio</span>
             </div>
             <div id="account" class="w3-right">
                 <span class="w3-bar-item" id="name"></span>
@@ -292,12 +302,12 @@
             </div>
         </div>
         <div id="body">
-            <div id="cars" class="w3-container">
-                <h2>Cars</h2>
-                <ul class="w3-ul w3-card-4" id="cars">
-                </ul>
+            <div id="services" class="w3-container">
+                <h2>Services</h2>
+                <table class="w3-table w3-striped w3-bordered" id="services">
+                </table>
             </div>
-            <button id="addCar" class="w3-button w3-blue-grey w3-margin">Add Car</button>
+            <button id="addService" class="w3-button w3-blue-grey w3-margin">Add Service</button>
         </div>
     </div>
 
@@ -316,18 +326,23 @@
     <div id="register" style="display:none">
         <h3>Register</h3>
         <form id="register">
-            Name: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">            <br> Password: <input type="password" name="password" class="w3-input"> <br>
+            <label for="name">Name: </label><input type="text" name="name" class="w3-input"> <br>
+            <label for="email">Email: </label><input type="text" name="email" class="w3-input"> <br>
+            <label for="password">Password: </label><input type="password" name="password" class="w3-input"> <br>
             <input type="button" value="Register" id="register" class="w3-input">
         </form>
     </div>
 
-    <div id="addCar" style="display:none">
-        <h3>Add Car</h3>
-        <form id="addCar">
-            <label for="SPZ">SPZ: </label><input type="text" name="SPZ" class="w3-input"> <br>
-            <label for="model">Model: </label><input type="text" name="model" class="w3-input"> <br>
-            <label for="year">Year: </label><input type="text" name="year" class="w3-input"> <br>
-            <input type="button" value="Add" id="addCar" class="w3-input">
+    <div id="addService" style="display:none">
+        <h3>Add Service</h3>
+        <form id="addService">
+            <label for="SPZ">SPZ</label><input type="text" name="SPZ" class="w3-input"> <br>
+            <label for="date">Date: </label><input type="date" name="date" class="w3-input" id="date"> <br>
+            <label for="cost">Cost: </label><input type="number" name="cost" class="w3-input"> <br>
+            <label for="description">Description: </label><input type="text" name="description" class="w3-input"><br>
+            <label for="description">Receipt: </label><input type="file" accept="image/*" id="file" multiple="false" name="receipt"
+                class="w3-input"><br>
+            <input type="button" value="Add" id="addService" class="w3-input">
         </form>
     </div>
 
