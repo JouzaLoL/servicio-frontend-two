@@ -1,3 +1,24 @@
 .w3-monospace {
   font-family: "Consolas", cursive, sans-serif;
 }
+
+table#cars {
+  table-layout: auto;
+  width: 100%;
+}
+
+td {
+  width: 1%;
+}
+
+td.car_model {
+  width: 30%
+}
+
+td.car_year {
+  width: 100%
+}
+
+.modal {
+  max-width: 1000px !important;
+}

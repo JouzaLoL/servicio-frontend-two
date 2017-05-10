@@ -34,8 +34,8 @@
 
 
             // Update Cars table
-            let $carlist = $('ul#cars');
-            let $cartrs = $('li.car');
+            let $cartable = $('table#cars');
+            let $cartrs = $('tr.car');
             $cartrs.remove();
 
             $.ajax({
@@ -48,16 +48,15 @@
                 dataType: "json"
             }).done((data) => {
                 data.cars.forEach(function (car) {
-                    let $li = c('li', { class: "car" });
-                    $li.append(c('span', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
-                    $li.append(c('br'));
-                    $li.append(c('span', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
-                    $li.append(c('span', { class: "car_year" }).text("Year: " + car.year));
-                    $li.append(c('span').append(c('a', { class: 'car_remove w3-button  w3-right', href: "#" }).text('Remove')));
-                    $li.append(c('span').append(c('a', { class: 'car_edit w3-button  w3-right', href: "#" }).text('Edit')));
-                    $li.append(c('span').append(c('a', { class: 'car_entries w3-button  w3-right', href: "#" }).text('Service Entries')));
-                    $li.append(c('span', { class: "car_id", style: "display:none" }).text(car._id));
-                    $li.appendTo($carlist);
+                    let $tr = c('tr', { class: "car" });
+                    $tr.append(c('td', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
+                    $tr.append(c('br'));
+                    $tr.append(c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
+                    $tr.append(c('td', { class: "car_vin w3-margin-right w3-monospace w3-border w3-padding-small w3-border-black" }).text(car.VIN));
+                    $tr.append(c('td', { class: "car_year" }).text("Rok: " + car.year));
+                    $tr.append(c('td').append(c('a', { class: 'car_entries  w3-padding', href: "#" }).text('Záznamy')));
+                    $tr.append(c('td', { class: "car_id", style: "display:none" }).text(car._id));
+                    $tr.appendTo($cartable);
                 });
 
                 registerEvents();
@@ -78,9 +77,10 @@
         }
 
         function registerEvents() {
+            // Remove Car
             $('a.car_remove').click((eventObject) => {
                 eventObject.preventDefault();
-                $(eventObject.target).text('Confirm').addClass('confirm_deletion');
+                $(eventObject.target).text('Potvrdit').addClass('confirm_deletion');
 
                 $('a.confirm_deletion').click((eventObject) => {
                     eventObject.preventDefault();
@@ -99,6 +99,7 @@
                 });
             });
 
+            // Edit Car
             $('a.car_edit').click((eventObject) => {
                 eventObject.preventDefault();
 
@@ -132,6 +133,7 @@
                 });
             });
 
+            // Display Car's Service Entries
             $('a.car_entries').click((eventObject) => {
                 eventObject.preventDefault();
                 let id = $(eventObject.target).parent().parent().find('.car_id').text();
@@ -144,23 +146,35 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 }).done((data) => {
-                    data.serviceBook.forEach(function (car) {
-                        let $li = c('li', { class: "car" });
-                        $li.append(c('span', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
-                        $li.append(c('br'));
-                        $li.append(c('span', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
-                        $li.append(c('span', { class: "car_year" }).text("Year: " + car.year));
-                        $li.append(c('span').append(c('a', { class: 'car_remove w3-button  w3-right', href: "#" }).text('Remove')));
-                        $li.append(c('span').append(c('a', { class: 'car_edit w3-button  w3-right', href: "#" }).text('Edit')));
-                        $li.append(c('span').append(c('a', { class: 'car_entries w3-button  w3-right', href: "#" }).text('Service Entries')));
-                        $li.append(c('span', { class: "car_id", style: "display:none" }).text(car._id));
-                        $li.appendTo($carlist);
+                    var $table = c('table', { id: "serviceModal", class: "w3-table w3-striped w3-bordered" });
+                    var $modal = c('div');
+                    data.serviceBook.forEach(function (service) {
+                        let $tr = c('tr', { class: "service" });
+                        $tr.append(c('td', { class: "service_vendor" }).text("Servis: " + service.vendor));
+                        $tr.append(c('td', { class: "service_mechanic" }).text("Mechanik: " + service.mechanicName));
+                        $tr.append(c('td', { class: "service_date" }).text("Datum: " + new Date(service.date).toLocaleDateString()));
+                        $tr.append(c('td', { class: "service_cost" }).text("Cena: " + service.cost + " Kč"));
+                        $tr.append(c('td', { class: "service_description" }).text("Popis: " + service.description));
+                        $tr.append(c('td').append(c('a', { class: 'service_receipt w3-right', href: "#" }).text('Účtenka')));
+                        $tr.append(c('img', { src: "data:" + service.receipt.contentType + ";base64," + bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
+                        $tr.appendTo($table);
                     });
+                    $table.appendTo($modal);
+                    $modal.modal();
+
+                    // Display Service's Receipt
+                    $('a.service_receipt').click((eventObject) => {
+                        eventObject.preventDefault();
+                        let img = $(eventObject.target).parent().parent().find('img').clone();
+                        $(img).modal({ closeExisting: false });
+                    });
+
                 });
             });
         }
 
         $(document).ready(() => {
+            // Login or restore session from cookie
             if (!Cookies.get('servicio-apitoken')) {
                 $('div#login').modal({
                     escapeClose: false,
@@ -172,6 +186,7 @@
                 refresh();
             }
 
+            // Show register modal
             $('a#register').click((e) => {
                 e.preventDefault();
                 $('div#register').modal({ closeExisting: false });
@@ -188,7 +203,7 @@
                         data: data
                     }).done((data) => {
                         if (data.success) {
-                            $(c('div', { class: "success" }).text("Registered succesfully")).modal({
+                            $(c('div', { class: "success" }).text("Registrace úspěšná")).modal({
                                 closeExisting: false
                             }).on($.modal.AFTER_CLOSE, function (event, modal) {
                                 $.modal.close();
@@ -196,7 +211,7 @@
                         }
                     }).fail((data) => {
                         if (data.responseJSON.statusText == "Validation Error") {
-                            $(c('div', { class: "error" }).text("Email already exists")).modal({
+                            $(c('div', { class: "error" }).text("Email se již používá")).modal({
                                 closeExisting: false
                             });
                         }
@@ -216,7 +231,7 @@
                 }).done((data) => {
                     if (!data.success) { return; }
 
-                    $(c('div', { class: "success" }).text("Login successful")).modal();
+                    $(c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
 
                     window.token = data.token;
                     Cookies.set('servicio-apitoken', data.token);
@@ -225,11 +240,11 @@
                 }).fail((d) => {
                     let data = d.responseJSON;
                     if (data.error == "BadPassword") {
-                        $(c('div', { class: "error" }).text("Wrong password")).modal({
+                        $(c('div', { class: "error" }).text("Špatné heslo")).modal({
                             closeExisting: false
                         });
                     } else if (data.error == "UserNotFound") {
-                        $(c('div', { class: "error" }).text("User doesn't exist")).modal({
+                        $(c('div', { class: "error" }).text("Uživatel neexistuje")).modal({
                             closeExisting: false
                         });
                     }
@@ -259,20 +274,9 @@
                 }).done((data) => {
                     if (!data.success) { return; }
 
-                    $(c('div', { class: "success" }).text("Car added")).modal();
+                    $(c('div', { class: "success" }).text("Auto přidáno")).modal();
                     refresh();
 
-                }).fail((d) => {
-                    let data = d.responseJSON;
-                    if (data.error == "BadPassword") {
-                        $(c('div', { class: "error" }).text("Wrong password")).modal({
-                            closeExisting: false
-                        });
-                    } else if (data.error == "UserNotFound") {
-                        $(c('div', { class: "error" }).text("User doesn't exist")).modal({
-                            closeExisting: false
-                        });
-                    }
                 });
             });
         });
@@ -281,62 +285,65 @@
     <!-- MAIN -->
 
     <div>
-        <div id="navigation" class="w3-bar w3-blue-grey w3-padding">
+        <div id="navigation" class="w3-bar w3-blue-grey">
             <div id="menu">
-                <a href="#navigation" class="w3-bar-item w3-large">Servicio</a>
+                <span href="#nspanvigation" class="w3-bar-item w3-large">Servicio</span>
             </div>
             <div id="account" class="w3-right">
                 <span class="w3-bar-item" id="name"></span>
-                <a href="" id="profile" class="w3-bar-item">Profile</a>
-                <a href="" id="logout" class="w3-bar-item">Log out</a>
+                <a href="" id="profile" class="w3-bar-item">Profil</a>
+                <a href="" id="logout" class="w3-bar-item">Odhlásit se</a>
             </div>
         </div>
         <div id="body">
             <div id="cars" class="w3-container">
                 <h2>Cars</h2>
-                <ul class="w3-ul w3-card-4" id="cars">
-                </ul>
+                <table class="w3-table w3-card-4" id="cars">
+                </table>
             </div>
-            <button id="addCar" class="w3-button w3-blue-grey w3-margin">Add Car</button>
+            <button id="addCar" class="w3-button w3-blue-grey w3-margin">Přidat auto</button>
         </div>
     </div>
 
     <!-- MODALS-->
 
     <div id="login" style="display:none">
-        <h3>Login</h3>
+        <h3>Přihlášení</h3>
         <form id="login">
             <label for="email">Email: </label><input type="text" name="email" class="w3-input"> <br>
-            <label for="password">Password: </label><input type="password" name="password" class="w3-input"> <br>
+            <label for="password">Heslo: </label><input type="password" name="password" class="w3-input"> <br>
             <input type="button" value="Login" id="login" class="w3-input">
         </form>
-        <span><a href="" id="register">Don't have an account? Register</a></span>
+        <span><a href="" id="register">Nemáte účet? Registrujte se</a></span>
     </div>
 
     <div id="register" style="display:none">
-        <h3>Register</h3>
+        <h3>Registrace</h3>
         <form id="register">
-            Name: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">            <br> Password: <input type="password" name="password" class="w3-input"> <br>
+            Name: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">
+            <br> Heslo: <input type="password" name="password" class="w3-input"> <br>
             <input type="button" value="Register" id="register" class="w3-input">
         </form>
     </div>
 
     <div id="addCar" style="display:none">
-        <h3>Add Car</h3>
+        <h3>Přidat auto</h3>
         <form id="addCar">
             <label for="SPZ">SPZ: </label><input type="text" name="SPZ" class="w3-input"> <br>
+            <label for="VIN">VIN: </label><input type="text" name="VIN" class="w3-input"> <br>
             <label for="model">Model: </label><input type="text" name="model" class="w3-input"> <br>
-            <label for="year">Year: </label><input type="text" name="year" class="w3-input"> <br>
+            <label for="year">Rok: </label><input type="text" name="year" class="w3-input"> <br>
             <input type="button" value="Add" id="addCar" class="w3-input">
         </form>
     </div>
 
     <div id="editCar" style="display:none">
-        <h3>Edit Car</h3>
+        <h3>Upravit auto</h3>
         <form id="editCar">
             <label for="SPZ">SPZ: </label><input type="text" name="SPZ" class="w3-input"> <br>
+            <label for="VIN">VIN: </label><input type="text" name="VIN" class="w3-input"> <br>
             <label for="model">Model: </label><input type="text" name="model" class="w3-input"> <br>
-            <label for="year">year: </label><input type="text" name="year" class="w3-input"> <br>
+            <label for="year">Rok: </label><input type="text" name="year" class="w3-input"> <br>
             <input type="button" value="Edit" id="editCar" class="w3-input">
         </form>
     </div>
