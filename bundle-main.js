@@ -1,7 +1,37 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var $ = require('jquery');
+
+module.exports = {
+    c: function (element, attributes) {
+        const e = $(document.createElement(element));
+        if (attributes) {
+            e.attr(attributes);
+        }
+        return e;
+    },
+    parseForm: function (id) {
+        return JSON.stringify(this.objectifyForm($(id).serializeArray()));
+    },
+    objectifyForm: function (formArray) {
+
+        var returnArray = {};
+        for (var i = 0; i < formArray.length; i++) {
+            returnArray[formArray[i]['name']] = formArray[i]['value'];
+        }
+        return returnArray;
+    },
+    bufferToBase64: function (buf) {
+        var binstr = Array.prototype.map.call(buf, function (ch) {
+            return String.fromCharCode(ch);
+        }).join('');
+        return btoa(binstr);
+    }
+};
+},{"jquery":4}],2:[function(require,module,exports){
+var $ = require('jquery');
 var Cookies = require('js-cookie');
 require('jquery-modal');
+var Helper = require('./helper.js')
 
 $(document).ready(() => {
     init();
@@ -47,14 +77,14 @@ function updateCars() {
         dataType: "json"
     }).done((data) => {
         data.cars.forEach(function (car) {
-            let $tr = c('tr', { class: "car" });
-            $tr.append(c('td', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
-            $tr.append(c('br'));
-            $tr.append(c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
-            $tr.append(c('td', { class: "car_vin w3-margin-right w3-monospace w3-border w3-padding-small w3-border-black" }).text(car.VIN));
-            $tr.append(c('td', { class: "car_year" }).text("Rok: " + car.year));
-            $tr.append(c('td').append(c('a', { class: 'car_entries  w3-padding', href: "#" }).text('Záznamy')));
-            $tr.append(c('td', { class: "car_id", style: "display:none" }).text(car._id));
+            let $tr = Helper.c('tr', { class: "car" });
+            $tr.append(Helper.c('td', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
+            $tr.append(Helper.c('br'));
+            $tr.append(Helper.c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
+            $tr.append(Helper.c('td', { class: "car_vin w3-margin-right w3-monospace w3-border w3-padding-small w3-border-black" }).text(car.VIN));
+            $tr.append(Helper.c('td', { class: "car_year" }).text("Rok: " + car.year));
+            $tr.append(Helper.c('td').append(Helper.c('a', { class: 'car_entries  w3-padding', href: "#" }).text('Záznamy')));
+            $tr.append(Helper.c('td', { class: "car_id", style: "display:none" }).text(car._id));
             $tr.appendTo($cartable);
         });
     });
@@ -75,7 +105,6 @@ function updateProfile() {
 }
 
 function registerEvents() {
-    // Display Car's Service Entries
     $(document).on('click', 'a.car_entries', (eventObject) => {
         eventObject.preventDefault();
         let id = $(eventObject.target).parent().parent().find('.car_id').text();
@@ -88,17 +117,17 @@ function registerEvents() {
             contentType: "application/json; charset=utf-8",
             dataType: "json"
         }).done((data) => {
-            var $table = c('table', { id: "serviceModal", class: "w3-table w3-striped w3-bordered" });
-            var $modal = c('div');
+            var $table = Helper.c('table', { id: "serviceModal", class: "w3-table w3-striped w3-bordered" });
+            var $modal = Helper.c('div');
             data.serviceBook.forEach(function (service) {
-                let $tr = c('tr', { class: "service" });
-                $tr.append(c('td', { class: "service_vendor" }).text("Servis: " + service.vendor));
-                $tr.append(c('td', { class: "service_mechanic" }).text("Mechanik: " + service.mechanicName));
-                $tr.append(c('td', { class: "service_date" }).text("Datum: " + new Date(service.date).toLocaleDateString()));
-                $tr.append(c('td', { class: "service_cost" }).text("Cena: " + service.cost + " Kč"));
-                $tr.append(c('td', { class: "service_description" }).text("Popis: " + service.description));
-                $tr.append(c('td').append(c('a', { class: 'service_receipt w3-right', href: "#" }).text('Účtenka')));
-                $tr.append(c('img', { src: "data:" + service.receipt.contentType + ";base64," + bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
+                let $tr = Helper.c('tr', { class: "service" });
+                $tr.append(Helper.c('td', { class: "service_vendor" }).text("Servis: " + service.vendor));
+                $tr.append(Helper.c('td', { class: "service_mechanic" }).text("Mechanik: " + service.mechanicName));
+                $tr.append(Helper.c('td', { class: "service_date" }).text("Datum: " + new Date(service.date).toLocaleDateString()));
+                $tr.append(Helper.c('td', { class: "service_cost" }).text("Cena: " + service.cost + " Kč"));
+                $tr.append(Helper.c('td', { class: "service_description" }).text("Popis: " + service.description));
+                $tr.append(Helper.c('td').append(Helper.c('a', { class: 'service_receipt w3-right', href: "#" }).text('Účtenka')));
+                $tr.append(Helper.c('img', { src: "data:" + service.receipt.contentType + ";base64," + Helper.bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
                 $tr.appendTo($table);
             });
             $table.appendTo($modal);
@@ -122,24 +151,24 @@ function registerEvents() {
     // Submit inside register modal
     $(document).on('click', 'input#register',
         () => {
-            let data = parseForm('form#register');
+            let data = Helper.parseForm('form#register');
             $.ajax({
                 url: window.Servicio.baseURL + "/user/register",
                 method: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: data
-            }).done((data) => {
-                if (data.success) {
-                    $(c('div', { class: "success" }).text("Registrace úspěšná")).modal({
+            }).done((res) => {
+                if (res.success) {
+                    $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal({
                         closeExisting: false
                     }).on($.modal.AFTER_CLOSE, function () {
                         $.modal.close();
                     });
                 }
-            }).fail((data) => {
-                if (data.responseJSON.statusText == "Validation Error") {
-                    $(c('div', { class: "error" }).text("Email se již používá")).modal({
+            }).fail((res) => {
+                if (res.responseJSON.statusText == "Validation Error") {
+                    $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
                         closeExisting: false
                     });
                 }
@@ -150,7 +179,7 @@ function registerEvents() {
     // Submit inside LOGIN modal
     $(document).on('click', 'input#login', () => {
 
-        let data = parseForm('form#login');
+        let data = Helper.parseForm('form#login');
         $.ajax({
             url: window.Servicio.baseURL + "/user/authenticate",
             method: "POST",
@@ -160,7 +189,7 @@ function registerEvents() {
         }).done((data) => {
             if (!data.success) { return; }
 
-            $(c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
+            $(Helper.c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
 
             window.Servicio.token = data.token;
             Cookies.set('servicio-apitoken', data.token);
@@ -169,11 +198,11 @@ function registerEvents() {
         }).fail((d) => {
             let data = d.responseJSON;
             if (data.error == "BadPassword") {
-                $(c('div', { class: "error" }).text("Špatné heslo")).modal({
+                $(Helper.c('div', { class: "error" }).text("Špatné heslo")).modal({
                     closeExisting: false
                 });
             } else if (data.error == "UserNotFound") {
-                $(c('div', { class: "error" }).text("Uživatel neexistuje")).modal({
+                $(Helper.c('div', { class: "error" }).text("Uživatel neexistuje")).modal({
                     closeExisting: false
                 });
             }
@@ -194,7 +223,7 @@ function registerEvents() {
 
     // Submit inside addCar modal
     $(document).on('click', 'input#addCar', () => {
-        let data = parseForm('form#addCar');
+        let data = Helper.parseForm('form#addCar');
         $.ajax({
             url: window.Servicio.baseURL + "/user/cars",
             method: "POST",
@@ -207,41 +236,13 @@ function registerEvents() {
         }).done((data) => {
             if (!data.success) { return; }
 
-            $(c('div', { class: "success" }).text("Auto přidáno")).modal();
+            $(Helper.c('div', { class: "success" }).text("Auto přidáno")).modal();
             refresh();
 
         });
     });
 }
-
-function c(element, attributes) {
-    const e = $(document.createElement(element));
-    if (attributes) {
-        e.attr(attributes);
-    }
-    return e;
-}
-
-function parseForm(id) {
-    return JSON.stringify(objectifyForm($(id).serializeArray()));
-}
-
-function objectifyForm(formArray) {
-
-    var returnArray = {};
-    for (var i = 0; i < formArray.length; i++) {
-        returnArray[formArray[i]['name']] = formArray[i]['value'];
-    }
-    return returnArray;
-}
-
-function bufferToBase64(buf) {
-    var binstr = Array.prototype.map.call(buf, function (ch) {
-        return String.fromCharCode(ch);
-    }).join('');
-    return btoa(binstr);
-}
-},{"jquery":3,"jquery-modal":2,"js-cookie":4}],2:[function(require,module,exports){
+},{"./helper.js":1,"jquery":4,"jquery-modal":3,"js-cookie":5}],3:[function(require,module,exports){
 /*
     A simple jQuery modal (http://github.com/kylefox/jquery-modal)
     Version 0.8.0
@@ -483,7 +484,7 @@ function bufferToBase64(buf) {
   });
 }));
 
-},{"jquery":3}],3:[function(require,module,exports){
+},{"jquery":4}],4:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.2.1
  * https://jquery.com/
@@ -10738,7 +10739,7 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*!
  * JavaScript Cookie v2.1.4
  * https://github.com/js-cookie/js-cookie
@@ -10905,4 +10906,4 @@ return jQuery;
 	return init(function () {});
 }));
 
-},{}]},{},[1]);
+},{}]},{},[2]);

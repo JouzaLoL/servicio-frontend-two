@@ -1,4 +1,5 @@
 {
+    "extends": "google",
     "env": {
         "browser": true,
         "commonjs": true,
@@ -18,6 +19,15 @@
         "no-unreachable": "warn",
         "no-unused-vars": "warn",
         "constructor-super": "warn",
-        "valid-typeof": "warn"
+        "valid-typeof": "warn",
+        "space-before-function-paren": "off",
+        "eol-last": "off",
+        "no-var": "off",
+        "comma-dangle": "off",
+        "new-cap": "off",
+        "max-len": "off",
+        "valid-jsdoc": "off",
+        "quotes": 0,
+        "no-shadow": "error"
     }
 }
