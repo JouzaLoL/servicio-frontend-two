@@ -124,14 +124,9 @@ function registerEvents() {
             dataType: "json",
             data: data
         }).done((res) => {
-            if (!res.success) {
-                return;
-            }
-
             $(Helper.c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
-
-            window.token = res.token;
-            Cookies.set('servicio-apitoken_vendor', res.window.Servicio.token);
+            Cookies.set('servicio-apitoken_vendor', res.token);
+            window.Servicio.token = Cookies.get('servicio-apitoken_vendor');
             refresh();
         }).fail((d) => {
             let res = d.responseJSON;
@@ -148,8 +143,8 @@ function registerEvents() {
     });
 
     $(document).on('click', 'a#logout', () => {
-        $('div#login').modal();
         Cookies.remove('servicio-apitoken_vendor');
+        $('div#login').modal();
     });
 
     $(document).on('click', 'button#addService', () => {
@@ -189,10 +184,8 @@ function registerEvents() {
                     dataType: "json",
                     data: JSON.stringify(data)
                 }).done((res) => {
-                    if (res.success) {
-                        refresh();
-                        $.modal.close();
-                    }
+                    refresh();
+                    $.modal.close();
                 });
             });
         };

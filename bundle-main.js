@@ -13,7 +13,6 @@ module.exports = {
         return JSON.stringify(this.objectifyForm($(id).serializeArray()));
     },
     objectifyForm: function (formArray) {
-
         var returnArray = {};
         for (var i = 0; i < formArray.length; i++) {
             returnArray[formArray[i]['name']] = formArray[i]['value'];
@@ -31,7 +30,7 @@ module.exports = {
 var $ = require('jquery');
 var Cookies = require('js-cookie');
 require('jquery-modal');
-var Helper = require('./helper.js')
+var Helper = require('./helper.js');
 
 $(document).ready(() => {
     init();
@@ -50,10 +49,8 @@ $(document).ready(() => {
 });
 
 function refresh() {
-
     updateCars();
     updateProfile();
-
 }
 
 function init() {
@@ -178,7 +175,6 @@ function registerEvents() {
 
     // Submit inside LOGIN modal
     $(document).on('click', 'input#login', () => {
-
         let data = Helper.parseForm('form#login');
         $.ajax({
             url: window.Servicio.baseURL + "/user/authenticate",
@@ -186,22 +182,23 @@ function registerEvents() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: data
-        }).done((data) => {
-            if (!data.success) { return; }
+        }).done((res) => {
+            if (!res.success) {
+                return;
+            }
 
             $(Helper.c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
 
-            window.Servicio.token = data.token;
-            Cookies.set('servicio-apitoken', data.token);
+            window.Servicio.token = res.token;
+            Cookies.set('servicio-apitoken', res.token);
             refresh();
-
         }).fail((d) => {
-            let data = d.responseJSON;
-            if (data.error == "BadPassword") {
+            let res = d.responseJSON;
+            if (res.error == "BadPassword") {
                 $(Helper.c('div', { class: "error" }).text("Špatné heslo")).modal({
                     closeExisting: false
                 });
-            } else if (data.error == "UserNotFound") {
+            } else if (res.error == "UserNotFound") {
                 $(Helper.c('div', { class: "error" }).text("Uživatel neexistuje")).modal({
                     closeExisting: false
                 });
@@ -233,12 +230,13 @@ function registerEvents() {
             },
             dataType: "json",
             data: data
-        }).done((data) => {
-            if (!data.success) { return; }
+        }).done((res) => {
+            if (!res.success) {
+                return;
+            }
 
             $(Helper.c('div', { class: "success" }).text("Auto přidáno")).modal();
             refresh();
-
         });
     });
 }
