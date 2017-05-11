@@ -58,8 +58,6 @@ function updateServices() {
             $tr.append(Helper.c('img', { src: "data:" + service.receipt.contentType + ";base64," + Helper.bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
             $tr.appendTo($servicestable);
         });
-
-        registerEvents();
     });
 }
 
@@ -79,18 +77,18 @@ function updateProfile() {
 }
 
 function registerEvents() {
-    $('a.service_receipt').click((eventObject) => {
+    $(document).on('click', 'a.service_receipt', (eventObject) => {
         eventObject.preventDefault();
         let img = $(eventObject.target).parent().parent().find('img').clone();
         $(img).modal();
     });
 
-    $('a#register').click((e) => {
+    $(document).on('click', 'a#register', (e) => {
         e.preventDefault();
         $('div#register').modal({ closeExisting: false });
     });
 
-    $('input#register').click(
+    $(document).on('click', 'input#register',
         () => {
             let data = Helper.parseForm('form#register');
             $.ajax({
@@ -99,16 +97,16 @@ function registerEvents() {
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: data
-            }).done((data) => {
-                if (data.success) {
+            }).done((res) => {
+                if (res.success) {
                     $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal({
                         closeExisting: false
                     }).on($.modal.AFTER_CLOSE, function () {
                         $.modal.close();
                     });
                 }
-            }).fail((data) => {
-                if (data.responseJSON.statusText == "Validation Error") {
+            }).fail((res) => {
+                if (res.responseJSON.statusText == "Validation Error") {
                     $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
                         closeExisting: false
                     });
@@ -117,8 +115,7 @@ function registerEvents() {
         }
     );
 
-    $('input#login').click(() => {
-
+    $(document).on('click', 'input#login', () => {
         let data = Helper.parseForm('form#login');
         $.ajax({
             url: window.Servicio.baseURL + "/vendor/authenticate",
@@ -126,22 +123,23 @@ function registerEvents() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: data
-        }).done((data) => {
-            if (!data.success) { return; }
+        }).done((res) => {
+            if (!res.success) {
+                return;
+            }
 
             $(Helper.c('div', { class: "success" }).text("Přihlášení úspěšné")).modal();
 
-            window.token = data.token;
-            Cookies.set('servicio-apitoken_vendor', data.window.Servicio.token);
+            window.token = res.token;
+            Cookies.set('servicio-apitoken_vendor', res.window.Servicio.token);
             refresh();
-
         }).fail((d) => {
-            let data = d.responseJSON;
-            if (data.error == "BadPassword") {
+            let res = d.responseJSON;
+            if (res.error == "BadPassword") {
                 $(Helper.c('div', { class: "error" }).text("Špatné heslo")).modal({
                     closeExisting: false
                 });
-            } else if (data.error == "UserNotFound") {
+            } else if (res.error == "UserNotFound") {
                 $(Helper.c('div', { class: "error" }).text("Uživatel neexistuje")).modal({
                     closeExisting: false
                 });
@@ -149,16 +147,16 @@ function registerEvents() {
         });
     });
 
-    $('a#logout').click(() => {
+    $(document).on('click', 'a#logout', () => {
         $('div#login').modal();
         Cookies.remove('servicio-apitoken_vendor');
     });
 
-    $('button#addService').click(() => {
+    $(document).on('click', 'button#addService', () => {
         $('div#addService').modal();
     });
 
-    $('input#addService').click(() => {
+    $(document).on('click', 'input#addService', () => {
         let d = Helper.parseForm('form#addService');
 
         var reader = new FileReader();
@@ -171,7 +169,7 @@ function registerEvents() {
             let data = JSON.parse(d);
             data.receipt = receipt;
             data.vendorID = window.Servicio._id;
-            data.date = new Date(data.date).toISOString()
+            data.date = new Date(data.date).toISOString();
             $.ajax({
                 url: window.Servicio.baseURL + "/vendor/cars/search/" + data.SPZ,
                 method: "GET",
@@ -181,7 +179,6 @@ function registerEvents() {
                 },
                 dataType: "json",
             }).done((car) => {
-
                 $.ajax({
                     url: window.Servicio.baseURL + "/vendor/cars/" + car.car._id + "/services",
                     method: "POST",
@@ -201,9 +198,3 @@ function registerEvents() {
         };
     });
 }
-
-
-// Main entry point
-$(document).ready(() => {
-
-});
