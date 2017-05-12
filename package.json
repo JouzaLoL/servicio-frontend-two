@@ -1,0 +1,28 @@
+{
+  "name": "servicio-frontend-two",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.html",
+  "dependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.7.1",
+    "jquery": "^3.2.1",
+    "jquery-modal": "^0.8.0",
+    "js-cookie": "^2.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha",
+    "dev": "watchify main.js -o bundle-main.js && watchify vendor.js -o bundle-vendor.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JouzaLoL/servicio-frontend-two.git"
+  },
+  "author": "Josef Vacek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JouzaLoL/servicio-frontend-two/issues"
+  },
+  "homepage": "https://github.com/JouzaLoL/servicio-frontend-two#readme"
+}

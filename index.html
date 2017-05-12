@@ -21,23 +21,28 @@
 <body>
 
     <div>
-        <div id="navigation" class="w3-bar w3-blue-grey">
-            <div id="menu">
-                <span href="#nspanvigation" class="w3-bar-item w3-large">Servicio</span>
-            </div>
-            <div id="account" class="w3-right">
+        <div id="navigation" class="w3-bar eb-blue">
+            <span href="#nspanvigation" class="w3-bar-item w3-text-white logo">Servicio</span>
+            <div id="account" class="w3-right w3-text-white">
                 <span class="w3-bar-item" id="name"></span>
-                <a href="" id="profile" class="w3-bar-item">Profil</a>
+                <a href="" id="refresh" class="w3-bar-item">Obnovit</a>
                 <a href="" id="logout" class="w3-bar-item">Odhlásit se</a>
             </div>
         </div>
         <div id="body">
-            <div id="cars" class="w3-container">
-                <h2>Cars</h2>
-                <table class="w3-table w3-card-4" id="cars">
+            <div id="cars" class="w3-container" style="overflow-x:auto;">
+                <h2>Garáž</h2>
+                <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable" id="cars">
+                    <tr class="">
+                        <th>Model</th>
+                        <th>SPZ</th>
+                        <th>VIN</th>
+                        <th>Rok</th>
+                        <th>Záznamy</th>
+                    </tr>
                 </table>
             </div>
-            <button id="addCar" class="w3-button w3-blue-grey w3-margin">Přidat auto</button>
+            <button id="addCar" class="w3-btn eb-blue w3-margin w3-text-white">Přidat auto</button>
         </div>
     </div>
 

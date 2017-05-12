@@ -46,12 +46,11 @@ function updateCars() {
     }).done((data) => {
         data.cars.forEach(function (car) {
             let $tr = Helper.c('tr', { class: "car" });
-            $tr.append(Helper.c('td', { class: "car_model w3-large w3-margin-bottom" }).text(car.model));
-            $tr.append(Helper.c('br'));
-            $tr.append(Helper.c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(car.SPZ));
-            $tr.append(Helper.c('td', { class: "car_vin w3-margin-right w3-monospace w3-border w3-padding-small w3-border-black" }).text(car.VIN));
-            $tr.append(Helper.c('td', { class: "car_year" }).text("Rok: " + car.year));
-            $tr.append(Helper.c('td').append(Helper.c('a', { class: 'car_entries  w3-padding', href: "#" }).text('Záznamy')));
+            $tr.append(Helper.c('td', { class: "car_model w3-large" }).text(car.model));
+            $tr.append(Helper.c('td', { class: "car_spz" }).text(car.SPZ.substr(0, 3) + " " + car.SPZ.substr(3, 6)));
+            $tr.append(Helper.c('td', { class: "car_vin" }).text(car.VIN));
+            $tr.append(Helper.c('td', { class: "car_year" }).text(car.year));
+            $tr.append(Helper.c('td').append(Helper.c('a', { class: 'car_entries', href: "#" }).text('Záznamy')));
             $tr.append(Helper.c('td', { class: "car_id", style: "display:none" }).text(car._id));
             $tr.appendTo($cartable);
         });
@@ -86,15 +85,19 @@ function registerEvents() {
             dataType: "json"
         }).done((data) => {
             var $table = Helper.c('table', { id: "serviceModal", class: "w3-table w3-striped w3-bordered" });
+            var ths = ['Servis', 'Mechanik', 'Datum', 'Cena', 'Popis', 'Účtenka'];
+            ths.forEach((th) => {
+                $table.append(Helper.c('th').text(th));
+            });
             var $modal = Helper.c('div');
             data.serviceBook.forEach(function (service) {
                 let $tr = Helper.c('tr', { class: "service" });
-                $tr.append(Helper.c('td', { class: "service_vendor" }).text("Servis: " + service.vendor));
-                $tr.append(Helper.c('td', { class: "service_mechanic" }).text("Mechanik: " + service.mechanicName));
-                $tr.append(Helper.c('td', { class: "service_date" }).text("Datum: " + new Date(service.date).toLocaleDateString()));
-                $tr.append(Helper.c('td', { class: "service_cost" }).text("Cena: " + service.cost + " Kč"));
-                $tr.append(Helper.c('td', { class: "service_description" }).text("Popis: " + service.description));
-                $tr.append(Helper.c('td').append(Helper.c('a', { class: 'service_receipt w3-right', href: "#" }).text('Účtenka')));
+                $tr.append(Helper.c('td', { class: "service_vendor" }).text(service.vendor));
+                $tr.append(Helper.c('td', { class: "service_mechanic" }).text(service.mechanicName));
+                $tr.append(Helper.c('td', { class: "service_date" }).text(new Date(service.date).toLocaleDateString()));
+                $tr.append(Helper.c('td', { class: "service_cost" }).text(service.cost + " Kč"));
+                $tr.append(Helper.c('td', { class: "service_description" }).text(service.description));
+                $tr.append(Helper.c('td').append(Helper.c('a', { class: 'service_receipt', href: "#" }).text('Účtenka')));
                 $tr.append(Helper.c('img', { src: "data:" + service.receipt.contentType + ";base64," + Helper.bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
                 $tr.appendTo($table);
             });

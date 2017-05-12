@@ -1,24 +1,74 @@
+@import url('https://fonts.googleapis.com/css?family=Courgette');
+
+@font-face {
+    font-family: "SPZ";
+    src: url(spz.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "VIN";
+    src: url(vin.ttf) format("truetype");
+}
+
 .w3-monospace {
   font-family: "Consolas", cursive, sans-serif;
 }
 
-table#cars {
-  table-layout: auto;
-  width: 100%;
+#body {
+  width: 70%;
+  margin: 0 auto;
 }
 
-td {
+table#cars {
+  table-layout: auto;
   width: 1%;
 }
 
-td.car_model {
-  width: 30%
-}
-
-td.car_year {
-  width: 100%
+tr td {
+  white-space: nowrap;
+  width: 1%;
 }
 
 .modal {
-  max-width: 1000px !important;
+  max-width: 80% !important;
+}
+
+.eb-blue {
+  background-color: #2f3980 !important;
+}
+
+.logo {
+  font-family: 'Courgette', cursive;
+  font-size: xx-large;
+}
+
+th {
+  text-align: center;
+}
+
+#account {
+  margin: auto;
+  margin-right: 0 !important;
+}
+
+#navigation {
+  display: flex;
+}
+
+#name {
+  font-weight: bold;
+  font-family: 'Open Sans', cursive;
+}
+
+.car_spz {
+  font-family: 'SPZ';
+  background-color: white;
+  box-shadow:inset 0px 0px 0px 2px black;
+  border-radius: 2px;
+  font-size: x-small;
+  padding: 12px !important;
+}
+
+.car_vin {
+  font-family: 'VIN';
 }
