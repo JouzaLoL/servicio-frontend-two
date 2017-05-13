@@ -101,6 +101,7 @@ function updateProfile() {
 }
 
 function registerEvents() {
+    // Show service entries
     $(document).on('click', 'a.car_entries', (eventObject) => {
         eventObject.preventDefault();
         let id = $(eventObject.target).parent().parent().find('.car_id').text();
@@ -114,10 +115,12 @@ function registerEvents() {
             dataType: "json"
         }).done((data) => {
             var $table = Helper.c('table', { id: "serviceModal", class: "w3-table w3-striped w3-bordered" });
+            let $thtr = Helper.c('tr');
             var ths = ['Servis', 'Mechanik', 'Datum', 'Cena', 'Popis', 'Účtenka'];
             ths.forEach((th) => {
-                $table.append(Helper.c('th').text(th));
+                $thtr.append(Helper.c('th').text(th));
             });
+            $table.append($thtr);
             var $modal = Helper.c('div');
             data.serviceBook.forEach(function (service) {
                 let $tr = Helper.c('tr', { class: "service" });
@@ -135,7 +138,7 @@ function registerEvents() {
         });
     });
 
-    // Display Service's Receipt
+    // Display receipt
     $(document).on('click', 'a.service_receipt', (eventObject) => {
         eventObject.preventDefault();
         let img = $(eventObject.target).parent().parent().find('img').clone();
@@ -148,7 +151,7 @@ function registerEvents() {
         $('div#register').modal({ closeExisting: false });
     });
 
-    // Submit inside register modal
+    // Submit register modal
     $(document).on('click', 'input#register',
         () => {
             let data = Helper.parseForm('form#register');
@@ -176,7 +179,7 @@ function registerEvents() {
         }
     );
 
-    // Submit inside LOGIN modal
+    // Submit login modal
     $(document).on('click', 'input#login', () => {
         let data = Helper.parseForm('form#login');
         $.ajax({
@@ -209,19 +212,19 @@ function registerEvents() {
         });
     });
 
-    // Click on logout
+    // Logout
     $(document).on('click', 'a#logout', () => {
         $('div#login').modal();
         Cookies.remove('servicio-apitoken');
         window.Servicio.token = undefined;
     });
 
-    // Click on addCar
+    // Add Car
     $(document).on('click', 'button#addCar', () => {
         $('div#addCar').modal();
     });
 
-    // Submit inside addCar modal
+    // Submit addCar modal
     $(document).on('click', 'input#addCar', () => {
         let data = Helper.parseForm('form#addCar');
         $.ajax({
