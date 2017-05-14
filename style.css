@@ -19,7 +19,7 @@
   margin: 0 auto;
 }
 
-table#cars {
+table#cars, table#services {
   table-layout: auto;
   width: 1%;
 }
@@ -73,7 +73,15 @@ th {
   font-family: 'VIN';
 }
 
-button#addCar, button#addService {
-    background-color: #2f3980;
-    color: white;
+button {
+    background-color: #2f3980 !important;
+    color: white !important;
+}
+
+div.success {
+  border: solid 3px green;
+}
+
+div.error {
+  border: solid 3px red;
 }

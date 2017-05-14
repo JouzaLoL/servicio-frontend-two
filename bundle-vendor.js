@@ -10739,14 +10739,14 @@ function updateServices() {
     }).done((data) => {
         data.services.forEach(function (service) {
             let $tr = Helper.c('tr', { class: "service" });
-            $tr.append(Helper.c('td', { class: "car_model w3-large w3-margin-bottom" }).text(service.car.model));
-            $tr.append(Helper.c('td', { class: "car_spz w3-margin-right w3-monospace w3-large w3-border w3-padding-small w3-border-black" }).text(service.car.SPZ));
-            $tr.append(Helper.c('td', { class: "car_vin w3-margin-right w3-monospace w3-border w3-padding-small w3-border-black" }).text(service.car.VIN));
-            $tr.append(Helper.c('td', { class: "service_date" }).text("Datum: " + new Date(service.date).toLocaleDateString()));
-            $tr.append(Helper.c('td', { class: "service_vendor" }).text("Servis: " + service.vendor));
-            $tr.append(Helper.c('td', { class: "service_mechanic" }).text("Mechanik: " + service.mechanicName));
-            $tr.append(Helper.c('td', { class: "service_cost" }).text("Cena: " + service.cost + " Kč"));
-            $tr.append(Helper.c('td', { class: "service_description" }).text("Popis: " + service.description));
+            $tr.append(Helper.c('td', { class: "car_model w3-large" }).text(service.car.model));
+            $tr.append(Helper.c('td', { class: "car_spz" }).text(service.car.SPZ));
+            $tr.append(Helper.c('td', { class: "car_vin" }).text(service.car.VIN));
+            $tr.append(Helper.c('td', { class: "service_date" }).text(new Date(service.date).toLocaleDateString()));
+            $tr.append(Helper.c('td', { class: "service_vendor" }).text(service.vendor));
+            $tr.append(Helper.c('td', { class: "service_mechanic" }).text(service.mechanicName));
+            $tr.append(Helper.c('td', { class: "service_cost" }).text(service.cost + " Kč"));
+            $tr.append(Helper.c('td', { class: "service_description" }).text(service.description));
             $tr.append(Helper.c('td').append(Helper.c('a', { class: 'service_receipt w3-right', href: "#" }).text('Účtenka')));
             $tr.append(Helper.c('img', { src: "data:" + service.receipt.contentType + ";base64," + Helper.bufferToBase64(new Uint8Array(service.receipt.data.data)), style: "display:none" }));
             $tr.appendTo($servicestable);
@@ -10792,11 +10792,35 @@ function registerEvents() {
                 data: data
             }).done((res) => {
                 if (res.success) {
-                    $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal({
+                    $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal();
+                }
+            }).fail((res) => {
+                if (res.responseJSON.statusText == "Validation Error") {
+                    $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
                         closeExisting: false
-                    }).on($.modal.AFTER_CLOSE, function () {
-                        $.modal.close();
                     });
+                }
+            });
+        }
+    );
+
+    $(document).on('click', 'button#addUser', (e) => {
+        e.preventDefault();
+        $('div#userRegister').modal();
+    });
+
+    $(document).on('click', 'input#userRegister',
+        () => {
+            let data = Helper.parseForm('form#userRegister');
+            $.ajax({
+                url: window.Servicio.baseURL + "/vendor/user/register",
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: data
+            }).done((res) => {
+                if (res.success) {
+                    $(Helper.c('div', { class: "success" }).text("Registrace uživatele úspěšná")).modal();
                 }
             }).fail((res) => {
                 if (res.responseJSON.statusText == "Validation Error") {
@@ -10877,8 +10901,8 @@ function registerEvents() {
                     dataType: "json",
                     data: JSON.stringify(data)
                 }).done((res) => {
+                    $(Helper.c('div', { class: "success" }).text("Záznam úspěšně přidán")).modal();
                     refresh();
-                    $.modal.close();
                 });
             });
         };

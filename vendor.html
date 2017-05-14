@@ -43,10 +43,12 @@
                         <th>Mechanik</th>
                         <th>Cena</th>
                         <th>Popis</th>
+                        <th>Účtenka</th>
                     </tr>
                 </table>
             </div>
             <button id="addService" class="w3-btn w3-margin w3-large">Přidat záznam</button>
+            <button id="addUser" class="w3-btn w3-margin w3-large">Přidat uživatele</button>
         </div>
     </div>
 
@@ -68,7 +70,16 @@
             <label for="name">Jméno: </label><input type="text" name="name" class="w3-input"> <br>
             <label for="email">Email: </label><input type="text" name="email" class="w3-input"> <br>
             <label for="password">Heslo: </label><input type="password" name="password" class="w3-input"> <br>
-            <input type="button" value="Register" id="register" class="w3-input">
+            <input type="button" value="Registrovat" id="register" class="w3-input">
+        </form>
+    </div>
+
+    <div id="userRegister" style="display:none">
+        <h3>Registrace uživatele</h3>
+        <form id="register">
+            Jméno: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">
+            <br> Heslo: <input type="text" name="password" class="w3-input"> <br>
+            <input type="button" value="Registrovat" id="userRegister" class="w3-input">
         </form>
     </div>
 

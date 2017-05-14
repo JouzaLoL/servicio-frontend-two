@@ -1,7 +1,7 @@
 {
   "name": "servicio-frontend-two",
   "version": "0.0.1",
-  "description": "",
+  "description": "Servicio Frontend",
   "main": "index.html",
   "dependencies": {
     "eslint": "^3.19.0",
@@ -10,7 +10,10 @@
     "jquery-modal": "^0.8.0",
     "js-cookie": "^2.1.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "watchify": "^3.9.0",
+    "concurrently": "^3.4.0"
+  },
   "scripts": {
     "test": "mocha",
     "dev": "concurrently --kill-others \"watchify main.js -o bundle-main.js\" \"watchify vendor.js -o bundle-vendor.js\" \"live-server\""

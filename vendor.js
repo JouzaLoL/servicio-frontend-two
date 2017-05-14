@@ -99,11 +99,35 @@ function registerEvents() {
                 data: data
             }).done((res) => {
                 if (res.success) {
-                    $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal({
+                    $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal();
+                }
+            }).fail((res) => {
+                if (res.responseJSON.statusText == "Validation Error") {
+                    $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
                         closeExisting: false
-                    }).on($.modal.AFTER_CLOSE, function () {
-                        $.modal.close();
                     });
+                }
+            });
+        }
+    );
+
+    $(document).on('click', 'button#addUser', (e) => {
+        e.preventDefault();
+        $('div#userRegister').modal();
+    });
+
+    $(document).on('click', 'input#userRegister',
+        () => {
+            let data = Helper.parseForm('form#userRegister');
+            $.ajax({
+                url: window.Servicio.baseURL + "/vendor/user/register",
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: data
+            }).done((res) => {
+                if (res.success) {
+                    $(Helper.c('div', { class: "success" }).text("Registrace uživatele úspěšná")).modal();
                 }
             }).fail((res) => {
                 if (res.responseJSON.statusText == "Validation Error") {
@@ -184,8 +208,8 @@ function registerEvents() {
                     dataType: "json",
                     data: JSON.stringify(data)
                 }).done((res) => {
+                    $(Helper.c('div', { class: "success" }).text("Záznam úspěšně přidán")).modal();
                     refresh();
-                    $.modal.close();
                 });
             });
         };
