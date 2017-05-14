@@ -73,7 +73,7 @@ th {
   font-family: 'VIN';
 }
 
-button#addCar {
+button#addCar, button#addService {
     background-color: #2f3980;
     color: white;
 }

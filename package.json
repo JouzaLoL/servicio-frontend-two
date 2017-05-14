@@ -13,8 +13,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "mocha",
-    "dev": "watchify main.js -o bundle-main.js && watchify vendor.js -o bundle-vendor.js",
-    "live": "live-server"
+    "dev": "concurrently --kill-others \"watchify main.js -o bundle-main.js\" \"watchify vendor.js -o bundle-vendor.js\" \"live-server\""
   },
   "repository": {
     "type": "git",

@@ -22,23 +22,31 @@
 <body>
 
     <div>
-        <div id="navigation" class="w3-bar w3-blue-grey">
-            <div id="menu">
-                <span class="w3-bar-item w3-large">Servicio</span>
-            </div>
-            <div id="account" class="w3-right">
+        <div id="navigation" class="w3-bar eb-blue">
+            <span href="#nspanvigation" class="w3-bar-item w3-text-white logo">Servicio</span>
+            <div id="account" class="w3-right w3-text-white">
                 <span class="w3-bar-item" id="name"></span>
-                <a href="" id="profile" class="w3-bar-item">Profil</a>
+                <a href="" id="refresh" class="w3-bar-item">Obnovit</a>
                 <a href="" id="logout" class="w3-bar-item">Odhlásit se</a>
             </div>
         </div>
         <div id="body">
-            <div id="services" class="w3-container">
+            <div id="services" class="w3-container" style="overflow-x:auto;">
                 <h2>Záznamy</h2>
-                <table class="w3-table w3-striped w3-bordered" id="services">
+                <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable" id="services">
+                    <tr class="w3-text-white eb-blue">
+                        <th>Model</th>
+                        <th>SPZ</th>
+                        <th>VIN</th>
+                        <th>Datum</th>
+                        <th>Servis</th>
+                        <th>Mechanik</th>
+                        <th>Cena</th>
+                        <th>Popis</th>
+                    </tr>
                 </table>
             </div>
-            <button id="addService" class="w3-button w3-blue-grey w3-margin">Přidat záznam</button>
+            <button id="addService" class="w3-btn w3-margin w3-large">Přidat záznam</button>
         </div>
     </div>
 
