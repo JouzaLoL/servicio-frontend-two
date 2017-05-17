@@ -111,34 +111,6 @@ function registerEvents() {
         }
     );
 
-    $(document).on('click', 'button#addUser', (e) => {
-        e.preventDefault();
-        $('div#userRegister').modal();
-    });
-
-    $(document).on('click', 'input#userRegister',
-        () => {
-            let data = Helper.parseForm('form#userRegister');
-            $.ajax({
-                url: window.Servicio.baseURL + "/vendor/user/register",
-                method: "POST",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: data
-            }).done((res) => {
-                if (res.success) {
-                    $(Helper.c('div', { class: "success" }).text("Registrace uživatele úspěšná")).modal();
-                }
-            }).fail((res) => {
-                if (res.responseJSON.statusText == "Validation Error") {
-                    $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
-                        closeExisting: false
-                    });
-                }
-            });
-        }
-    );
-
     $(document).on('click', 'input#login', () => {
         let data = Helper.parseForm('form#login');
         $.ajax({

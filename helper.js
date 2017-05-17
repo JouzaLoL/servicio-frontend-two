@@ -23,5 +23,17 @@ module.exports = {
             return String.fromCharCode(ch);
         }).join('');
         return btoa(binstr);
+    },
+    hrdate: function (date) {
+        var datum = new Date(date); // aktuální datum
+        var denVTydnu = ["neděle", "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota"];
+        var retezec = "";
+        retezec += denVTydnu[datum.getDay()] + ", "; // Den v týdnu
+        retezec += datum.getDate() + ". "; // Den v měsíci
+        retezec += (1 + datum.getMonth()) + ". "; // Měsíce jsou číslovány od nuly
+        retezec += datum.getFullYear() + " "; // Rok ve formátu 0000
+        retezec += datum.getHours() + ":"; // Hodiny
+        retezec += datum.getMinutes(); // Minuty
+        return retezec;
     }
 };

@@ -24,6 +24,18 @@ module.exports = {
             return String.fromCharCode(ch);
         }).join('');
         return btoa(binstr);
+    },
+    hrdate: function (date) {
+        var datum = new Date(date); // aktuální datum
+        var denVTydnu = ["neděle", "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota"];
+        var retezec = "";
+        retezec += denVTydnu[datum.getDay()] + ", "; // Den v týdnu
+        retezec += datum.getDate() + ". "; // Den v měsíci
+        retezec += (1 + datum.getMonth()) + ". "; // Měsíce jsou číslovány od nuly
+        retezec += datum.getFullYear() + " "; // Rok ve formátu 0000
+        retezec += datum.getHours() + ":"; // Hodiny
+        retezec += datum.getMinutes(); // Minuty
+        return retezec;
     }
 };
 },{"jquery":3}],2:[function(require,module,exports){
@@ -10793,34 +10805,6 @@ function registerEvents() {
             }).done((res) => {
                 if (res.success) {
                     $(Helper.c('div', { class: "success" }).text("Registrace úspěšná")).modal();
-                }
-            }).fail((res) => {
-                if (res.responseJSON.statusText == "Validation Error") {
-                    $(Helper.c('div', { class: "error" }).text("Email se již používá")).modal({
-                        closeExisting: false
-                    });
-                }
-            });
-        }
-    );
-
-    $(document).on('click', 'button#addUser', (e) => {
-        e.preventDefault();
-        $('div#userRegister').modal();
-    });
-
-    $(document).on('click', 'input#userRegister',
-        () => {
-            let data = Helper.parseForm('form#userRegister');
-            $.ajax({
-                url: window.Servicio.baseURL + "/vendor/user/register",
-                method: "POST",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: data
-            }).done((res) => {
-                if (res.success) {
-                    $(Helper.c('div', { class: "success" }).text("Registrace uživatele úspěšná")).modal();
                 }
             }).fail((res) => {
                 if (res.responseJSON.statusText == "Validation Error") {

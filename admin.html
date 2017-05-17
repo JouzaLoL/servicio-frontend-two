@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Servicio Admin Panel</title>
+
+    <!-- W3.CSS -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- JQuery Modal -->
+    <script src="jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="jquery.modal.css" type="text/css" media="screen" />
+    <!-- JS Cookie -->
+    <script src="js.cookie.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body>
+
+    <div>
+        <div id="navigation" class="w3-bar eb-blue">
+            <span href="#nspanvigation" class="w3-bar-item w3-text-white logo">Servicio</span>
+            <div id="account" class="w3-right w3-text-white">
+                <span class="w3-bar-item" id="name"></span>
+                <a href="" id="refresh" class="w3-bar-item">Obnovit</a>
+                <a href="" id="logout" class="w3-bar-item">Odhlásit se</a>
+            </div>
+        </div>
+        <div id="body">
+            <div id="users" class="w3-container" style="overflow-x:auto;">
+                <h2>Uživatelé</h2>
+                <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable" id="users">
+                    <tr class="w3-text-white eb-blue">
+                        <th>Jméno</th>
+                        <th>Email</th>
+                        <th>Datum Registrace</th>
+                        <th>Datum Změny</th>
+                    </tr>
+                </table>
+            </div>
+            <button id="addUser" class="w3-btn w3-margin w3-large">Přidat uživatele</button>
+
+            <div id="vendors" class="w3-container" style="overflow-x:auto;">
+                <h2>Servisy</h2>
+                <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable" id="vendors">
+                    <tr class="w3-text-white eb-blue">
+                        <th>Jméno</th>
+                        <th>Email</th>
+                        <th>Datum Registrace</th>
+                        <th>Datum Změny</th>
+                    </tr>
+                </table>
+            </div>
+            <button id="addVendor" class="w3-btn w3-margin w3-large">Přidat servis</button>
+
+        </div>
+    </div>
+
+    <!-- MODALS-->
+
+    <div id="login" style="display:none">
+        <h3>Přihlášení</h3>
+        <form id="login">
+            <label for="password">Heslo: </label><input type="password" name="password" class="w3-input"> <br>
+            <input type="button" value="Login" id="login" class="w3-input">
+        </form>
+    </div>
+
+    <div id="userRegister" style="display:none">
+        <h3>Registrace uživatele</h3>
+        <form id="userRegister">
+            Jméno: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">
+            <br> Heslo: <input type="password" name="password" class="w3-input"> <br>
+            <input type="button" value="Registrovat" id="userRegister" class="w3-input">
+        </form>
+    </div>
+
+    <div id="vendorRegister" style="display:none">
+        <h3>Registrace servisu</h3>
+        <form id="vendorRegister">
+            Jméno: <input type="text" name="name" class="w3-input"> <br> Email: <input type="text" name="email" class="w3-input">
+            <br> Heslo: <input type="password" name="password" class="w3-input"> <br>
+            <input type="button" value="Registrovat" id="vendorRegister" class="w3-input">
+        </form>
+    </div>
+
+    <script src="bundle-admin.js"></script>
+</body>
+
+</html>

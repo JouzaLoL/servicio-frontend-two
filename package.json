@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "dev": "concurrently --kill-others \"watchify main.js -o bundle-main.js\" \"watchify vendor.js -o bundle-vendor.js\" \"live-server\""
+    "dev": "concurrently --kill-others \"watchify main.js -o bundle-main.js\" \"watchify vendor.js -o bundle-vendor.js\" \"watchify admin.js -o bundle-admin.js\" \"live-server\""
   },
   "repository": {
     "type": "git",
